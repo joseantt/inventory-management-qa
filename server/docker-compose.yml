@@ -1,0 +1,14 @@
+services:
+  inventory-db:
+    image: postgres:17.5-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: inventory-db
+    ports:
+      - "${DB_PORT:-5432}:${DB_PORT:-5432}" # TODO: Must be changed later
+    healthcheck:
+      test: [ "CMD-SHELL", "sh -c 'pg_isready -U ${POSTGRES_USER:-postgres} -d  ${POSTGRES_PASSWORD:-password}'" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
