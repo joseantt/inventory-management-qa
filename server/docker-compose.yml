@@ -12,3 +12,21 @@ services:
       interval: 10s
       timeout: 3s
       retries: 3
+
+  keycloak-auth:
+    image: quay.io/keycloak/keycloak:26.2.5
+    environment:
+      KC_HOSTNAME: localhost
+      KC_HOSTNAME_PORT: ${KEYCLOAK_PORT:-7080}
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN_USER:-admin}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
+      KC_HEALTH_ENABLED: "true"
+      KC_LOG_LEVEL: info
+    ports:
+      - "${KEYCLOAK_PORT:-7080}:${KEYCLOAK_PORT:-7080}" # TODO: Must be changed later
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://${KEYCLOAK_HOSTNAME:-localhost}:${KEYCLOAK_PORT:-7080}/health/ready" ]
+      interval: 15s
+      timeout: 2s
+      retries: 15
+    command: ["start-dev", "--http-port", "${KEYCLOAK_PORT:-7080}"]
