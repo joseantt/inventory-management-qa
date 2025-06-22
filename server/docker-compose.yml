@@ -16,12 +16,15 @@ services:
   keycloak-auth:
     image: quay.io/keycloak/keycloak:26.2.5
     environment:
-      KC_HOSTNAME: localhost
+      KC_HOSTNAME: ${KEYCLOAK_HOSTNAME:-localhost}
       KC_HOSTNAME_PORT: ${KEYCLOAK_PORT:-7080}
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN_USER:-admin}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
       KC_HEALTH_ENABLED: "true"
       KC_LOG_LEVEL: info
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+      - ./inventory-realm-realm.json:/opt/keycloak/data/import/realm.json
     ports:
       - "${KEYCLOAK_PORT:-7080}:${KEYCLOAK_PORT:-7080}" # TODO: Must be changed later
     healthcheck:
@@ -29,4 +32,7 @@ services:
       interval: 15s
       timeout: 2s
       retries: 15
-    command: ["start-dev", "--http-port", "${KEYCLOAK_PORT:-7080}"]
+    command: [ "start-dev", "--http-port", "${KEYCLOAK_PORT:-7080}", "--import-realm" ]
+
+volumes:
+  keycloak_data:
