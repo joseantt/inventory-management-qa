@@ -43,7 +43,7 @@ public class ProductController {
   }
 
   @PostMapping()
-  public ResponseEntity<ProductResponseDTO> postMethodName(@RequestBody @Valid ProductRequestDTO productRequestDTO) {
+  public ResponseEntity<ProductResponseDTO> createProduct(@RequestBody @Valid ProductRequestDTO productRequestDTO) {
     ProductResponseDTO productResponseDTO =
         ProductMapper.INSTANCE.productToProductResponseDTO(
             productService.create(ProductMapper.INSTANCE.productRequestDTOToProduct(productRequestDTO)));
@@ -52,7 +52,7 @@ public class ProductController {
   }
 
   @PatchMapping("/{id}")
-  public ResponseEntity<ProductResponseDTO> patchMethodName(
+  public ResponseEntity<ProductResponseDTO> editProduct(
       @PathVariable Long id, @RequestBody @Valid ProductRequestDTO productRequestDTO) {
     ProductResponseDTO productResponseDTO =
         ProductMapper.INSTANCE.productToProductResponseDTO(
