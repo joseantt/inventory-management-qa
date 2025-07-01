@@ -36,7 +36,7 @@ public class ProductService {
     existingProduct.setPrice(product.getPrice());
     existingProduct.setQuantity(product.getQuantity());
 
-    return productRepository.save(product);
+    return productRepository.save(existingProduct);
   }
 
   public Product delete(Long id) {
