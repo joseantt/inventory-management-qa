@@ -24,10 +24,10 @@ public class JwtAuthConverter implements Converter<Jwt, AbstractAuthenticationTo
     private final JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter =
             new JwtGrantedAuthoritiesConverter();
 
-    @Value("${jwt.auth.converter.principle-attribute}")
-    private String principleAttribute;
+    @Value("${jwt.auth.converter.principal-attribute}")
+    private String principalAttribute;
     @Value("${jwt.auth.converter.resource-id}")
-    private String resourceId = "inventory-backend";
+    private String resourceId;
 
     @Override
     public AbstractAuthenticationToken convert(@NonNull Jwt jwt) {
@@ -46,8 +46,8 @@ public class JwtAuthConverter implements Converter<Jwt, AbstractAuthenticationTo
 
     private String getPrincipleClaimName(Jwt jwt) {
         String claimName = JwtClaimNames.SUB;
-        if(principleAttribute != null) {
-            claimName = principleAttribute;
+        if(principalAttribute != null) {
+            claimName = principalAttribute;
         }
         return jwt.getClaim(claimName);
     }
@@ -71,6 +71,5 @@ public class JwtAuthConverter implements Converter<Jwt, AbstractAuthenticationTo
         return resourceRoles.stream()
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                 .collect(Collectors.toSet());
-
     }
 }
