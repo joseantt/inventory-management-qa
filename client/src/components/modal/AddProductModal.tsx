@@ -25,7 +25,6 @@ import {
 } from '@chakra-ui/react';
 import { useProductForm } from '@lib/hooks/useProductForm';
 import { useKeycloak } from '@react-keycloak/web';
-import Card from '@/components/card/Card';
 
 export const PRODUCT_CATEGORIES = [
 	'ELECTRONICS',
@@ -36,8 +35,6 @@ export const PRODUCT_CATEGORIES = [
 	'FURNITURE',
 	'OTHER',
 ];
-
-// isOpen, onOpen, onClose;
 
 type AddProductModalProps = {
 	isOpen: boolean;

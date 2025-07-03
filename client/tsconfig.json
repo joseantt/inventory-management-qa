@@ -26,6 +26,13 @@
 			"@public/*": ["./public/*"]
 		}
 	},
-	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+	"include": [
+		"next-env.d.ts",
+		"**/*.ts",
+		"**/*.tsx",
+		".next/types/**/*.ts",
+		"tests/playwright.config.ts.",
+		"tests/auth.setup.ts."
+	],
 	"exclude": ["node_modules"]
 }

@@ -1,7 +1,5 @@
 'use client';
 
-import { useDeleteProduct } from '@lib/hooks/useDeleteModal';
-import { useInventoryPage } from '@lib/hooks/useInventoryPage';
 import {
 	AlertDialog,
 	AlertDialogBody,
@@ -12,6 +10,8 @@ import {
 	Button,
 	useToast,
 } from '@chakra-ui/react';
+import { useDeleteProduct } from '@lib/hooks/useDeleteModal';
+import { useInventoryPage } from '@lib/hooks/useInventoryPage';
 import type { Product } from '@lib/model/product.model';
 import { useKeycloak } from '@react-keycloak/web';
 import { useRef } from 'react';
