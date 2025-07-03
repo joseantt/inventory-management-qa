@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 
 type Options = {
@@ -46,7 +46,13 @@ export function usePagination({
 
 	const [currentPage, setCurrentPage] = useState(initialPage);
 
-	const totalPages = Math.max(Math.ceil(totalRegisters / registersPerPage), 1);
+	const totalPagesRef = useRef(
+		Math.max(Math.ceil(totalRegisters / registersPerPage), 1),
+	);
+	totalPagesRef.current = Math.max(
+		Math.ceil(totalRegisters / registersPerPage),
+		1,
+	);
 
 	const updateUrlWithDebounce = useDebouncedCallback((page: number) => {
 		const params = new URLSearchParams(searchParams);
@@ -56,19 +62,18 @@ export function usePagination({
 
 	const goToPage = useCallback(
 		(page: number) => {
-			if (page >= 1 && page <= totalPages) {
-				setCurrentPage(page);
-				updateUrlWithDebounce(page);
-			}
+			const validPage = Math.max(1, Math.min(page, totalPagesRef.current));
+			setCurrentPage(validPage);
+			updateUrlWithDebounce(validPage);
 		},
-		[totalPages, updateUrlWithDebounce],
+		[updateUrlWithDebounce],
 	);
 
 	const goToNextPage = useCallback(() => {
-		if (currentPage < totalPages) {
+		if (currentPage < totalPagesRef.current) {
 			goToPage(currentPage + 1);
 		}
-	}, [currentPage, totalPages, goToPage]);
+	}, [currentPage, goToPage]);
 
 	const goToPreviousPage = useCallback(() => {
 		if (currentPage > 1) {
@@ -76,23 +81,25 @@ export function usePagination({
 		}
 	}, [currentPage, goToPage]);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: n/a
 	useEffect(() => {
 		const pageFromUrl = searchParams.get(pageParam);
 		if (pageFromUrl) {
 			const parsedPage = Number.parseInt(pageFromUrl, 10);
-			if (parsedPage !== currentPage) {
+			if (!Number.isNaN(parsedPage) && parsedPage !== currentPage) {
 				setCurrentPage(parsedPage);
 			}
 		} else if (currentPage !== 1) {
 			setCurrentPage(1);
 		}
-	}, [searchParams, pageParam, currentPage]);
+	}, [searchParams, pageParam]);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: n/a
 	useEffect(() => {
-		if (currentPage > totalPages && totalPages > 0) {
-			goToPage(totalPages);
+		if (currentPage > totalPagesRef.current && totalPagesRef.current > 0) {
+			goToPage(totalPagesRef.current);
 		}
-	}, [totalPages, currentPage, goToPage]);
+	}, [goToPage]);
 
 	const previousPages =
 		currentPage > 1
@@ -100,16 +107,16 @@ export function usePagination({
 			: [];
 
 	const nextPages =
-		currentPage < totalPages
+		currentPage < totalPagesRef.current
 			? generatePagesArray(
 					currentPage,
-					Math.min(currentPage + siblingsCount, totalPages),
+					Math.min(currentPage + siblingsCount, totalPagesRef.current),
 				)
 			: [];
 
 	return {
 		currentPage,
-		totalPages,
+		totalPages: totalPagesRef.current,
 		nextPages,
 		previousPages,
 		registersPerPage,
