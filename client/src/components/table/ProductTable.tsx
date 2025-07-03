@@ -19,6 +19,7 @@ import {
 import ProductTableSkeleton from '@components/skeletons/TableSkeleton';
 import { useProductTable } from '@lib/hooks/useProductTable';
 import type { Product } from '@lib/model/product.model';
+import { useKeycloak } from '@react-keycloak/web';
 import { FiEdit2, FiTrash2 } from 'react-icons/fi';
 
 interface ProductTableProps {
@@ -34,9 +35,15 @@ export default function ProductTable({
 	onDelete,
 	isLoading = false,
 }: ProductTableProps) {
+	const { keycloak } = useKeycloak();
+
 	const { tableData, getCategoryColor, formatPrice, isEmpty } = useProductTable(
 		{ products, isLoading },
 	);
+
+	const isAdmin =
+		keycloak.resourceAccess?.['inventory-backend']?.roles?.includes('admin') ||
+		false;
 
 	if (isLoading) {
 		return <ProductTableSkeleton rowCount={5} />;
@@ -110,6 +117,7 @@ export default function ProductTable({
 												colorScheme="red"
 												variant="ghost"
 												onClick={() => onDelete(product)}
+												isDisabled={!isAdmin}
 											/>
 										</Tooltip>
 									)}

@@ -22,7 +22,7 @@ export default function ProductTableSkeleton({
 }: ProductTableSkeletonProps) {
 	return (
 		<TableContainer w="100%">
-			<Table variant="striped" colorScheme="turquoise" size="md">
+			<Table size="md">
 				<Thead>
 					<Tr>
 						<Th>Name</Th>
