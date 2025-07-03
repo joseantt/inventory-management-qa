@@ -8,3 +8,9 @@
 	background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
 	background-size: 16px 16px;
 }
+
+html,
+body {
+	height: 100%;
+	overflow: hidden;
+}
