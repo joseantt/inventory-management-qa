@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Button, Flex } from '@chakra-ui/react';
+import { Flex } from '@chakra-ui/react';
 import HeroWithIllustration from '@components/hero/HeroWithIllustration';
 // import { useKeycloak } from '@react-keycloak/web';
 // import { useRouter, useSearchParams } from 'next/navigation';
