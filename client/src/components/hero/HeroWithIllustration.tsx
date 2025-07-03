@@ -15,19 +15,22 @@ import Illustration from './illustration/Illustration';
 
 export default function HeroWithIllustration() {
 	const { keycloak } = useKeycloak();
-	const isAuthenticatedAndHasPermission = useMemo(() => {
-		if (!keycloak.authenticated) return false;
 
-		try {
-			const inventoryBackend = keycloak.resourceAccess?.['inventory-backend'];
-			if (!inventoryBackend || !inventoryBackend.roles) return false;
+	const isAuthenticated = useMemo(() => {
+		return keycloak.authenticated;
+	}, [keycloak.authenticated]);
 
-			return inventoryBackend.roles.includes('admin');
-		} catch (error) {
-			console.error('Error checking permissions:', error);
-			return false;
-		}
-	}, [keycloak.authenticated, keycloak.resourceAccess]);
+	const hasPermission = useMemo(() => {
+		if (!keycloak.resourceAccess) return false;
+
+		const inventoryBackend = keycloak.resourceAccess['inventory-backend'];
+		if (!inventoryBackend || !inventoryBackend.roles) return false;
+
+		return (
+			inventoryBackend.roles.includes('admin') ||
+			inventoryBackend.roles.includes('employee')
+		);
+	}, [keycloak.resourceAccess]);
 
 	return (
 		<Container maxW={'7xl'}>
@@ -56,7 +59,7 @@ export default function HeroWithIllustration() {
 					and flexible.
 				</Text>
 				<Stack spacing={6} direction={'row'}>
-					{isAuthenticatedAndHasPermission && (
+					{isAuthenticated && hasPermission && (
 						<Button
 							as={'a'}
 							href={Routes.Inventory}
@@ -71,7 +74,7 @@ export default function HeroWithIllustration() {
 							Go to Inventory
 						</Button>
 					)}
-					{!isAuthenticatedAndHasPermission && (
+					{!isAuthenticated && (
 						<Button
 							display={{ base: 'none', md: 'inline-flex' }}
 							fontSize={'sm'}
@@ -87,6 +90,19 @@ export default function HeroWithIllustration() {
 							}}
 						>
 							Go to Inventory
+						</Button>
+					)}
+					{isAuthenticated && !hasPermission && (
+						<Button
+							display={{ base: 'none', md: 'inline-flex' }}
+							fontSize={'sm'}
+							colorScheme={'white'}
+							bg={'turquoise.700'}
+							_hover={{
+								bg: 'turquoise.600',
+							}}
+						>
+							Welcome
 						</Button>
 					)}
 				</Stack>
