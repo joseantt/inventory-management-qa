@@ -20,6 +20,10 @@ public class ProductService {
   }
 
   public Page<Product> getProducts(Specification<Product> specification, Pageable pageable) {
+    if (specification == null) {
+      return productRepository.findAll(pageable);
+    }
+
     return productRepository.findAll(specification, pageable);
   }
 

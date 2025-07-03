@@ -2,6 +2,7 @@ package inventory.management.qa.server.mappers;
 
 import java.util.List;
 
+import inventory.management.qa.server.dtos.ReducedProductResponseDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -17,4 +18,5 @@ public interface ProductMapper {
   ProductResponseDTO productToProductResponseDTO(Product product);
 
   List<ProductResponseDTO> productsToProductResponseDTOs(List<Product> products);
+  List<ReducedProductResponseDTO> productsToReducedProductResponseDTO(List<Product> products);
 }
