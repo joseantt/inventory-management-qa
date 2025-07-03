@@ -22,10 +22,15 @@ import {
 	useColorModeValue,
 	useDisclosure,
 } from '@chakra-ui/react';
+import { useKeycloak } from '@react-keycloak/web';
+import Link from 'next/link';
 import NavbarImagotipo from '@/components/brand/NavbarImagotipo';
+import { Routes } from '@/lib/constants/routes.constants';
 
 export default function WithSubNavigation() {
 	const { isOpen, onToggle } = useDisclosure();
+	const { keycloak } = useKeycloak();
+	const isAuthenticated = keycloak.authenticated;
 
 	return (
 		<Box>
@@ -55,7 +60,9 @@ export default function WithSubNavigation() {
 					/>
 				</Flex>
 				<Flex flex={{ base: 1 }} justify={{ base: 'center', md: 'start' }}>
-					<NavbarImagotipo width={209} height={38} />
+					<Link href={Routes.Home}>
+						<NavbarImagotipo width={209} height={38} />
+					</Link>
 
 					<Flex display={{ base: 'none', md: 'flex' }} ml={10}>
 						<DesktopNav />
@@ -68,20 +75,42 @@ export default function WithSubNavigation() {
 					direction={'row'}
 					spacing={6}
 				>
-					<Button
-						as={'a'}
-						display={{ base: 'none', md: 'inline-flex' }}
-						fontSize={'sm'}
-						fontWeight={600}
-						color={'white'}
-						bg={'turquoise.700'}
-						href={'/login'}
-						_hover={{
-							bg: 'turquoise.600',
-						}}
-					>
-						Login
-					</Button>
+					{!isAuthenticated && (
+						<Button
+							display={{ base: 'none', md: 'inline-flex' }}
+							fontSize={'sm'}
+							fontWeight={600}
+							color={'white'}
+							bg={'turquoise.700'}
+							onClick={() =>
+								keycloak.login({
+									redirectUri: window.location.origin + Routes.Home,
+								})
+							}
+							_hover={{
+								bg: 'turquoise.600',
+							}}
+						>
+							Login
+						</Button>
+					)}
+					{isAuthenticated && (
+						<Button
+							display={{ base: 'none', md: 'inline-flex' }}
+							fontSize={'sm'}
+							fontWeight={600}
+							color={'white'}
+							bg={'orange.600'}
+							_hover={{
+								bg: 'orange.500',
+							}}
+							onClick={() =>
+								keycloak.logout({ redirectUri: window.location.origin })
+							}
+						>
+							LogOut
+						</Button>
+					)}
 				</Stack>
 			</Flex>
 
