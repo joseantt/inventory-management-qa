@@ -50,24 +50,23 @@ export async function updateProduct({
 	return response.json();
 }
 
-
 export async function deleteProduct({
-  url = API_ULR,
-  productId,
-  headers,
+	url = API_ULR,
+	productId,
+	headers,
 }: ActionProps & { productId: string }) {
-  const response = await fetch(`${url}/${productId}`, {
-    method: 'DELETE',
-    headers: {
-      ...headers,
-    },
-  });
+	const response = await fetch(`${url}/${productId}`, {
+		method: 'DELETE',
+		headers: {
+			...headers,
+		},
+	});
 
 	console.log('Delete response:', response);
 
-  if (!response.ok) {
-    throw new Error('Failed to delete product');
-  }
+	if (!response.ok) {
+		throw new Error('Failed to delete product');
+	}
 
-  return response.json();
+	return response.json();
 }
