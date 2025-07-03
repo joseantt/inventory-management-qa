@@ -13,7 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.data.domain.Sort;
 import inventory.management.qa.server.dtos.ProductRequestDTO;
 import inventory.management.qa.server.dtos.ProductResponseDTO;
 import inventory.management.qa.server.mappers.ProductMapper;
@@ -30,12 +30,12 @@ public class ProductController {
 
   @GetMapping
   public ResponseEntity<PaginatedResponseDTO<ProductResponseDTO>>
-  getAllProducts(@PageableDefault(size = 20) Pageable pageable,
-                 @RequestParam(required = false) String name,
+  getAllProducts(@PageableDefault(size = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable,
+                 @RequestParam(required = false) String search,
                  @RequestParam(required = false) String category,
                  @RequestParam(required = false) Double minPrice,
                  @RequestParam(required = false) Double maxPrice) {
-    Specification<Product> sp = ProductSpecs.combinedSpecification(name, category, minPrice, maxPrice);
+    Specification<Product> sp = ProductSpecs.combinedSpecification(search, category, minPrice, maxPrice);
 
     Page<Product> productPage = productService.getProducts(sp, pageable);
 
@@ -75,7 +75,7 @@ public class ProductController {
   }
 
   @PreAuthorize("hasRole('admin')")
-  @GetMapping("/delete/{id}")
+  @DeleteMapping("/{id}")
   public ResponseEntity<ProductResponseDTO> deleteProduct(@PathVariable Long id) {
     ProductResponseDTO productResponseDTO =
         ProductMapper.INSTANCE.productToProductResponseDTO(productService.delete(id));
