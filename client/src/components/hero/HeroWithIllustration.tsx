@@ -1,5 +1,6 @@
+'use client';
+
 import {
-	Box,
 	Button,
 	Container,
 	Flex,
@@ -7,10 +8,27 @@ import {
 	Stack,
 	Text,
 } from '@chakra-ui/react';
+import { useKeycloak } from '@react-keycloak/web';
+import { useMemo } from 'react';
 import { Routes } from '@/lib/constants/routes.constants';
 import Illustration from './illustration/Illustration';
 
 export default function HeroWithIllustration() {
+	const { keycloak } = useKeycloak();
+	const isAuthenticatedAndHasPermission = useMemo(() => {
+		if (!keycloak.authenticated) return false;
+
+		try {
+			const inventoryBackend = keycloak.resourceAccess?.['inventory-backend'];
+			if (!inventoryBackend || !inventoryBackend.roles) return false;
+
+			return inventoryBackend.roles.includes('admin');
+		} catch (error) {
+			console.error('Error checking permissions:', error);
+			return false;
+		}
+	}, [keycloak.authenticated, keycloak.resourceAccess]);
+
 	return (
 		<Container maxW={'7xl'}>
 			<Stack
@@ -20,7 +38,7 @@ export default function HeroWithIllustration() {
 				py={{ base: 2 }}
 			>
 				<Flex w={'full'}>
-					<Illustration height={400} />
+					<Illustration height={300} />
 				</Flex>
 				<Heading
 					fontWeight={600}
@@ -38,19 +56,39 @@ export default function HeroWithIllustration() {
 					and flexible.
 				</Text>
 				<Stack spacing={6} direction={'row'}>
-					<Button
-						as={'a'}
-						href={Routes.Inventory}
-						display={{ base: 'none', md: 'inline-flex' }}
-						fontSize={'sm'}
-						colorScheme={'white'}
-						bg={'turquoise.700'}
-						_hover={{
-							bg: 'turquoise.600',
-						}}
-					>
-						Go to Inventory
-					</Button>
+					{isAuthenticatedAndHasPermission && (
+						<Button
+							as={'a'}
+							href={Routes.Inventory}
+							display={{ base: 'none', md: 'inline-flex' }}
+							fontSize={'sm'}
+							colorScheme={'white'}
+							bg={'turquoise.700'}
+							_hover={{
+								bg: 'turquoise.600',
+							}}
+						>
+							Go to Inventory
+						</Button>
+					)}
+					{!isAuthenticatedAndHasPermission && (
+						<Button
+							display={{ base: 'none', md: 'inline-flex' }}
+							fontSize={'sm'}
+							colorScheme={'white'}
+							bg={'turquoise.700'}
+							onClick={() => {
+								keycloak.login({
+									redirectUri: window.location.origin + Routes.Inventory,
+								});
+							}}
+							_hover={{
+								bg: 'turquoise.600',
+							}}
+						>
+							Go to Inventory
+						</Button>
+					)}
 				</Stack>
 			</Stack>
 		</Container>

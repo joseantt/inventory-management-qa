@@ -76,7 +76,6 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
 const NavItem = ({ icon, href, children, ...rest }: NavItemProps) => {
 	const pathname = usePathname();
 	const isActive = pathname === href;
-	console.log('isActive', isActive, pathname, href);
 
 	return (
 		<Box

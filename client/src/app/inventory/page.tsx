@@ -13,105 +13,7 @@ import Pagination from '@components/pagination/Pagination';
 import ProductSearch from '@components/search/ProductSearch';
 import ProductTable from '@components/table/ProductTable';
 import { useInventoryPage } from '@lib/hooks/useInventoryPage';
-
-const products = [
-	{
-		id: '1',
-		name: 'Product 1',
-		description: 'Description for product 1',
-		category: 'ELECTRONICS',
-		price: '100.00',
-		quantity: '10',
-	},
-	{
-		id: '2',
-		name: 'Product 2',
-		description: 'Description for product 2',
-		category: 'CLOTHING',
-		price: '50.00',
-		quantity: '20',
-	},
-	{
-		id: '3',
-		name: 'Product 3',
-		description: 'Description for product 3',
-		category: 'FOOD',
-		price: '5.00',
-		quantity: '100',
-	},
-	{
-		id: '4',
-		name: 'Product 4',
-		description: 'Description for product 4',
-		category: 'BOOKS',
-		price: '15.00',
-		quantity: '30',
-	},
-	{
-		id: '5',
-		name: 'Product 5',
-		description: 'Description for product 5',
-		category: 'TOYS',
-		price: '25.00',
-		quantity: '15',
-	},
-	{
-		id: '6',
-		name: 'Product 6',
-		description: 'Description for product 6',
-		category: 'FURNITURE',
-		price: '200.00',
-		quantity: '5',
-	},
-	{
-		id: '7',
-		name: 'Product 7',
-		description: 'Description for product 7',
-		category: 'OTHER',
-		price: '75.00',
-		quantity: '8',
-	},
-	{
-		id: '8',
-		name: 'Product 8',
-		description: 'Description for product 8',
-		category: 'ELECTRONICS',
-		price: '120.00',
-		quantity: '12',
-	},
-	{
-		id: '9',
-		name: 'Product 9',
-		description: 'Description for product 9',
-		category: 'CLOTHING',
-		price: '60.00',
-		quantity: '18',
-	},
-	{
-		id: '10',
-		name: 'Product 10',
-		description: 'Description for product 10',
-		category: 'FOOD',
-		price: '7.50',
-		quantity: '50',
-	},
-	{
-		id: '11',
-		name: 'Product 11',
-		description: 'Description for product 11',
-		category: 'BOOKS',
-		price: '20.00',
-		quantity: '25',
-	},
-	{
-		id: '12',
-		name: 'Product 12',
-		description: 'Description for product 12',
-		category: 'TOYS',
-		price: '30.00',
-		quantity: '10',
-	},
-];
+import LoadingScreen from '@/components/loading/LoadingScreen';
 
 export default function InventoryPage() {
 	const {
@@ -126,18 +28,24 @@ export default function InventoryPage() {
 		onDeleteClose,
 		handleConfirmDelete,
 		handleDeleteProduct,
+		products,
+		isLoading,
+		isAuthChecking,
 	} = useInventoryPage();
+
+	if (isAuthChecking) {
+		return <LoadingScreen />;
+	}
 
 	return (
 		<main>
 			<SidebarWithHeader>
-				<Flex direction="column" gap={4} p={4}>
+				<Flex direction="column" gap={4}>
 					<Flex
 						direction={{ base: 'column', md: 'row' }}
 						justifyContent={{ base: 'center', md: 'space-between' }}
 						alignItems="center"
 						gap={4}
-						p={4}
 						flexGrow={1}
 						flexWrap="wrap"
 					>
@@ -148,8 +56,8 @@ export default function InventoryPage() {
 							flexWrap="wrap"
 							mb={{ base: 4, md: 0 }}
 						>
-							<Card name="Total Products" quantity={0} />
-							<Card name="Total Products" quantity={0} />
+							<Card name="Total Products" quantity={products.totalElements} />
+							{/* <Card name="Out Of Stock" quantity={0} /> */}
 						</Flex>
 						<Flex justifyContent="center" alignItems="center">
 							<Button
@@ -190,15 +98,15 @@ export default function InventoryPage() {
 						</Flex>
 					</Flex>
 					<ProductTable
-						products={products}
+						products={products.content}
 						onEdit={handleEditProduct}
 						onDelete={handleDeleteProduct}
-						isLoading={false}
+						isLoading={isLoading}
 					/>
 					<Pagination
-						total={products.length}
+						total={products.totalElements}
 						colorScheme={'orange'}
-						perPage={1}
+						perPage={products.pageSize}
 					/>
 				</Flex>
 				<AddProductModal isOpen={isOpen} onClose={onClose} onOpen={onOpen} />

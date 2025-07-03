@@ -23,8 +23,10 @@ import {
 	useToast,
 	VStack,
 } from '@chakra-ui/react';
+import { useInventoryPage } from '@lib/hooks/useInventoryPage';
 import { useProductForm } from '@lib/hooks/useProductForm';
 import type { Product } from '@lib/model/product.model';
+import { useKeycloak } from '@react-keycloak/web';
 import { useEffect } from 'react';
 
 export const PRODUCT_CATEGORIES = [
@@ -40,7 +42,7 @@ export const PRODUCT_CATEGORIES = [
 type EditProductModalProps = {
 	isOpen: boolean;
 	onClose: () => void;
-	product: Product | null;
+	product: Product | undefined;
 	onUpdate?: (updatedProduct: Product) => void;
 };
 
@@ -51,6 +53,8 @@ export default function EditProductModal({
 	onUpdate,
 }: EditProductModalProps) {
 	const toast = useToast();
+	const { keycloak } = useKeycloak();
+	const { refreshProducts } = useInventoryPage();
 
 	const {
 		formData,
@@ -60,8 +64,38 @@ export default function EditProductModal({
 		handleInputChange,
 		handleNumberChange,
 		resetForm,
-		validateForm,
-	} = useProductForm();
+		submitForm,
+	} = useProductForm({
+		mode: 'edit',
+		product: product,
+		token: keycloak.token ?? '',
+		onSuccess: (data) => {
+			toast({
+				title: 'Product updated',
+				description: `${data.name} has been updated successfully`,
+				status: 'success',
+				duration: 5000,
+				isClosable: true,
+			});
+
+			refreshProducts();
+
+			if (onUpdate) {
+				onUpdate(data);
+			}
+
+			handleCloseModal();
+		},
+		onError: (error) => {
+			toast({
+				title: 'Update failed',
+				description: error.message,
+				status: 'error',
+				duration: 5000,
+				isClosable: true,
+			});
+		},
+	});
 
 	useEffect(() => {
 		if (isOpen && product) {
@@ -76,43 +110,7 @@ export default function EditProductModal({
 	}, [isOpen, product, setFormData]);
 
 	const handleSubmit = async () => {
-		if (!validateForm()) {
-			return;
-		}
-
-		try {
-			const updatedProduct: Product = {
-				...product!,
-				name: formData.name,
-				description: formData.description,
-				category: formData.category,
-				price: formData.price,
-				quantity: formData.quantity,
-			};
-
-			if (onUpdate) {
-				onUpdate(updatedProduct);
-			}
-
-			toast({
-				title: 'Product updated',
-				description: `${formData.name} has been updated successfully`,
-				status: 'success',
-				duration: 5000,
-				isClosable: true,
-			});
-
-			handleCloseModal();
-		} catch (error) {
-			toast({
-				title: 'Update failed',
-				description:
-					error instanceof Error ? error.message : 'An error occurred',
-				status: 'error',
-				duration: 5000,
-				isClosable: true,
-			});
-		}
+		await submitForm();
 	};
 
 	const handleCloseModal = () => {
