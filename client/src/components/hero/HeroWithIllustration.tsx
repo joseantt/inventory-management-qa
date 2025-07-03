@@ -7,11 +7,12 @@ import {
 	Stack,
 	Text,
 } from '@chakra-ui/react';
+import { Routes } from '@/lib/constants/routes.constants';
 import Illustration from './illustration/Illustration';
 
 export default function HeroWithIllustration() {
 	return (
-		<Container maxW={'5xl'}>
+		<Container maxW={'7xl'}>
 			<Stack
 				textAlign={'center'}
 				align={'center'}
@@ -19,7 +20,7 @@ export default function HeroWithIllustration() {
 				py={{ base: 2 }}
 			>
 				<Flex w={'full'}>
-					<Illustration height={240} />
+					<Illustration height={400} />
 				</Flex>
 				<Heading
 					fontWeight={600}
@@ -39,6 +40,7 @@ export default function HeroWithIllustration() {
 				<Stack spacing={6} direction={'row'}>
 					<Button
 						as={'a'}
+						href={Routes.Inventory}
 						display={{ base: 'none', md: 'inline-flex' }}
 						fontSize={'sm'}
 						colorScheme={'white'}
@@ -51,7 +53,6 @@ export default function HeroWithIllustration() {
 					</Button>
 				</Stack>
 			</Stack>
-			<Box h={'140px'} />
 		</Container>
 	);
 }
