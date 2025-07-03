@@ -1,7 +1,8 @@
 package inventory.management.qa.server.services;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import inventory.management.qa.server.entities.Product;
@@ -18,8 +19,8 @@ public class ProductService {
     return productRepository.save(product);
   }
 
-  public List<Product> getAll() {
-    return productRepository.findAll();
+  public Page<Product> getProducts(Specification<Product> specification, Pageable pageable) {
+    return productRepository.findAll(specification, pageable);
   }
 
   public Product findById(Long id) {

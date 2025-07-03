@@ -21,9 +21,9 @@ public class ProductRequestDTO {
 
     @NotNull(message = "Product price is required")
     @DecimalMin(value = "0.0", message = "Price must be greater than 0")
-    Double price;
+    double price;
 
     @NotNull(message = "Product quantity is required")
     @Min(value = 0, message = "Quantity must be greater than or equal to 0")
-    Integer quantity;
+    int quantity;
 }
