@@ -4,6 +4,7 @@ import lombok.Value;
 
 @Value
 public class ProductResponseDTO {
+    String id;
     String name;
     String description;
     String category;

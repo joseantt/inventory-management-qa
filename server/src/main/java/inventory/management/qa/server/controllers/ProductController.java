@@ -31,11 +31,11 @@ public class ProductController {
   @GetMapping
   public ResponseEntity<PaginatedResponseDTO<ProductResponseDTO>>
   getAllProducts(@PageableDefault(size = 20) Pageable pageable,
-                 @RequestParam(required = false) String name,
+                 @RequestParam(required = false) String searchTerm,
                  @RequestParam(required = false) String category,
                  @RequestParam(required = false) Double minPrice,
                  @RequestParam(required = false) Double maxPrice) {
-    Specification<Product> sp = ProductSpecs.combinedSpecification(name, category, minPrice, maxPrice);
+    Specification<Product> sp = ProductSpecs.combinedSpecification(searchTerm, category, minPrice, maxPrice);
 
     Page<Product> productPage = productService.getProducts(sp, pageable);
 
@@ -75,11 +75,11 @@ public class ProductController {
   }
 
   @PreAuthorize("hasRole('admin')")
-  @GetMapping("/delete/{id}")
+  @DeleteMapping("delete/{id}")
   public ResponseEntity<ProductResponseDTO> deleteProduct(@PathVariable Long id) {
     ProductResponseDTO productResponseDTO =
         ProductMapper.INSTANCE.productToProductResponseDTO(productService.delete(id));
 
-    return new ResponseEntity<>(productResponseDTO, HttpStatus.OK);
+    return new ResponseEntity<>(productResponseDTO, HttpStatus.NO_CONTENT);
   }
 }
