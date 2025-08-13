@@ -27,8 +27,8 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(authorize -> authorize
-                    .requestMatchers(HttpMethod.GET, "/api/v1/product/{id}").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/v1/product/").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/v1/product/{id}").permitAll()
                     .anyRequest().authenticated()
             ).oauth2ResourceServer(oauth2 -> oauth2
                     .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthConverter))

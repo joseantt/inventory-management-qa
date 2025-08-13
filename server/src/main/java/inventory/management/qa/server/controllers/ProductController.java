@@ -80,6 +80,6 @@ public class ProductController {
     ProductResponseDTO productResponseDTO =
         ProductMapper.INSTANCE.productToProductResponseDTO(productService.delete(id));
 
-    return new ResponseEntity<>(productResponseDTO, HttpStatus.OK);
+    return new ResponseEntity<>(productResponseDTO, HttpStatus.NO_CONTENT);
   }
 }
