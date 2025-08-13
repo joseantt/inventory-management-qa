@@ -6,8 +6,7 @@
 		"dev": "next dev --turbopack",
 		"build": "next build",
 		"start": "next start",
-		"biome": "biome check --write",
-		"dev:https": "next dev --experimental-https"
+		"biome": "biome check --write"
 	},
 	"dependencies": {
 		"@chakra-ui/icons": "^2.0.19",
