@@ -48,7 +48,7 @@ Feature: CRUD operations on products
   Scenario: Authenticated user retrieves products with all filters applied
     Given An user with username "admin@admin.com" and password "admin" is authenticated
     When The user retrieves products with the following filters
-      | category    | priceMin | priceMax | searchTerm       |
+      | category    | minPrice | maxPrice | searchTerm       |
       | TOYS        | 10.00    | 35.00    | Updated Product |
     Then The products matching all filters are successfully retrieved
     And The response status code is 200

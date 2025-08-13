@@ -2,7 +2,6 @@
 
 import {
 	Button,
-	Flex,
 	FormControl,
 	FormErrorMessage,
 	FormLabel,
@@ -21,13 +20,11 @@ import {
 	NumberInputStepper,
 	Select,
 	Textarea,
-	useDisclosure,
 	useToast,
 	VStack,
 } from '@chakra-ui/react';
-import SidebarWithHeader from '@components/navigation/sidebar/SidebarWithBanner';
 import { useProductForm } from '@lib/hooks/useProductForm';
-import Card from '@/components/card/Card';
+import { useKeycloak } from '@react-keycloak/web';
 
 export const PRODUCT_CATEGORIES = [
 	'ELECTRONICS',
@@ -38,8 +35,6 @@ export const PRODUCT_CATEGORIES = [
 	'FURNITURE',
 	'OTHER',
 ];
-
-// isOpen, onOpen, onClose;
 
 type AddProductModalProps = {
 	isOpen: boolean;
@@ -53,6 +48,7 @@ export default function AddProductModal({
 	onClose,
 }: AddProductModalProps) {
 	const toast = useToast();
+	const { keycloak } = useKeycloak();
 
 	const {
 		formData,
@@ -61,27 +57,35 @@ export default function AddProductModal({
 		handleInputChange,
 		handleNumberChange,
 		resetForm,
-	} = useProductForm();
+		submitForm,
+	} = useProductForm({
+		mode: 'create',
+		onSuccess: (data) => {
+			toast({
+				title: 'Product created',
+				description: `${data.name} has been created successfully`,
+				status: 'success',
+				duration: 5000,
+				isClosable: true,
+			});
+			handleCloseModal();
+		},
+		onError: (error) => {
+			toast({
+				title: 'Creation failed',
+				description: error.message,
+				status: 'error',
+				duration: 5000,
+				isClosable: true,
+			});
+		},
+		token: keycloak.token ?? '',
+	});
 
-	// const handleSubmit = async () => {
-	// 	const result = await submitForm();
+	const handleSubmit = async () => {
+		await submitForm();
+	};
 
-	// 	if (result) {
-	// 		// Mostrar notificación de éxito
-	// 		toast({
-	// 			title: 'Product created',
-	// 			description: `${result.name} has been added to inventory`,
-	// 			status: 'success',
-	// 			duration: 5000,
-	// 			isClosable: true,
-	// 		});
-
-	// 		// Cerrar modal y resetear formulario
-	// 		handleCloseModal();
-	// 	}
-	// };
-
-	// Reset form when closing modal
 	const handleCloseModal = () => {
 		resetForm();
 		onClose();
@@ -199,7 +203,7 @@ export default function AddProductModal({
 						_hover={{
 							bg: 'turquoise.600',
 						}}
-						// onClick={handleSubmit}
+						onClick={handleSubmit}
 						isLoading={isSubmitting}
 						loadingText="Creating..."
 					>

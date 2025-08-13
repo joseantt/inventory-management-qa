@@ -94,8 +94,7 @@ public class ProductSteps {
             throw new RuntimeException("Product creation response does not contain an ID");
         }
 
-        String idValue = (String) body.get("id");
-        createdProductId = Long.parseLong(idValue);
+        createdProductId = ((Integer) body.get("id")).longValue();
     }
 
     @And("The response status code is {int}")
@@ -168,7 +167,7 @@ public class ProductSteps {
         HttpEntity<Void> request = new HttpEntity<>(createHeaders());
 
         return restTemplate.exchange(
-                "/api/v1/product/delete/" + productId,
+                "/api/v1/product/" + productId,
                 HttpMethod.DELETE,
                 request,
                 new ParameterizedTypeReference<>() {}
@@ -307,7 +306,7 @@ public class ProductSteps {
 
         for (Map<String, String> filter : filters) {
             if (filter.containsKey("name")) {
-                url.append("name=").append(filter.get("name")).append("&");
+                url.append("search=").append(filter.get("name")).append("&");
             }
             if (filter.containsKey("category")) {
                 url.append("category=").append(filter.get("category")).append("&");
@@ -343,7 +342,7 @@ public class ProductSteps {
         this.searchTerm = searchTerm;
 
         this.response = restTemplate.exchange(
-                "/api/v1/product/?searchTerm=" + searchTerm,
+                "/api/v1/product/?search=" + searchTerm,
                 HttpMethod.GET,
                 request,
                 new ParameterizedTypeReference<>() {}

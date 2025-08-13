@@ -10,13 +10,16 @@ import {
 	Button,
 	useToast,
 } from '@chakra-ui/react';
+import { useDeleteProduct } from '@lib/hooks/useDeleteModal';
+import { useInventoryPage } from '@lib/hooks/useInventoryPage';
 import type { Product } from '@lib/model/product.model';
+import { useKeycloak } from '@react-keycloak/web';
 import { useRef } from 'react';
 
 type DeleteProductModalProps = {
 	isOpen: boolean;
 	onClose: () => void;
-	product: Product | null;
+	product: Product | undefined;
 	onDelete?: (productId: string) => void;
 };
 
@@ -28,34 +31,51 @@ export default function DeleteProductModal({
 }: DeleteProductModalProps) {
 	const toast = useToast();
 	const cancelRef = useRef<HTMLButtonElement>(null);
+	const { refreshProducts } = useInventoryPage();
+	const { keycloak } = useKeycloak();
 
-	const handleDelete = async () => {
-		if (!product) return;
+	const isAdmin =
+		keycloak.resourceAccess?.['inventory-backend']?.roles?.includes('admin') ||
+		false;
 
-		try {
-			if (onDelete) {
-				onDelete(product?.id ?? '');
+	const { deleteProductById, isDeleting } = useDeleteProduct({
+		isAdmin,
+		onSuccess: (productId) => {
+			if (product) {
+				toast({
+					title: 'Product deleted',
+					description: `${product.name} has been deleted successfully`,
+					status: 'success',
+					duration: 5000,
+					isClosable: true,
+				});
 			}
 
-			toast({
-				title: 'Product deleted',
-				description: `${product.name} has been deleted successfully`,
-				status: 'success',
-				duration: 5000,
-				isClosable: true,
-			});
+			refreshProducts();
+
+			if (onDelete) {
+				onDelete(productId);
+			}
 
 			onClose();
-		} catch (error) {
+		},
+		// biome-ignore lint/suspicious/noExplicitAny: n/a
+		onError: (error: any) => {
 			toast({
 				title: 'Delete failed',
-				description:
-					error instanceof Error ? error.message : 'An error occurred',
+				description: error.message,
 				status: 'error',
 				duration: 5000,
 				isClosable: true,
 			});
-		}
+		},
+		token: keycloak.token ?? '',
+	});
+
+	const handleDelete = async () => {
+		if (!product || !product.id) return;
+
+		await deleteProductById(product.id);
 	};
 
 	if (!product) return null;
@@ -85,6 +105,8 @@ export default function DeleteProductModal({
 						<Button
 							colorScheme="red"
 							onClick={handleDelete}
+							isLoading={isDeleting}
+							isDisabled={!isAdmin}
 							ml={3}
 							_hover={{
 								bg: 'red.500',
