@@ -8,29 +8,14 @@ import {
 	Stack,
 	Text,
 } from '@chakra-ui/react';
-import { useKeycloak } from '@react-keycloak/web';
-import { useMemo } from 'react';
+
 import { Routes } from '@/lib/constants/routes.constants';
+import useHeroWithIllustration from '@/lib/hooks/useHeroWithIllustration';
 import Illustration from './illustration/Illustration';
 
 export default function HeroWithIllustration() {
-	const { keycloak } = useKeycloak();
-
-	const isAuthenticated = useMemo(() => {
-		return keycloak.authenticated;
-	}, [keycloak.authenticated]);
-
-	const hasPermission = useMemo(() => {
-		if (!keycloak.resourceAccess) return false;
-
-		const inventoryBackend = keycloak.resourceAccess['inventory-backend'];
-		if (!inventoryBackend || !inventoryBackend.roles) return false;
-
-		return (
-			inventoryBackend.roles.includes('admin') ||
-			inventoryBackend.roles.includes('employee')
-		);
-	}, [keycloak.resourceAccess]);
+	const { isAuthenticated, hasPermission, goToLogin } =
+		useHeroWithIllustration();
 
 	return (
 		<Container maxW={'7xl'}>
@@ -80,11 +65,7 @@ export default function HeroWithIllustration() {
 							fontSize={'sm'}
 							colorScheme={'white'}
 							bg={'turquoise.700'}
-							onClick={() => {
-								keycloak.login({
-									redirectUri: window.location.origin + Routes.Inventory,
-								});
-							}}
+							onClick={goToLogin}
 							_hover={{
 								bg: 'turquoise.600',
 							}}
