@@ -6,8 +6,10 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import org.hibernate.envers.Audited;
 
 @Entity
+@Audited
 public class Product {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,6 +21,7 @@ public class Product {
   private Category category;
   private double price;
   private int quantity;
+  private int olderQuantity;
 
   public Product() {
   }
@@ -29,6 +32,7 @@ public class Product {
     this.category = category;
     this.price = price;
     this.quantity = quantity;
+    this.olderQuantity = quantity;
   }
 
   public Long getId() {
@@ -79,4 +83,11 @@ public class Product {
     this.quantity = quantity;
   }
 
+  public int getOlderQuantity() {
+      return olderQuantity;
+  }
+
+  public void setOlderQuantity(int olderQuantity) {
+      this.olderQuantity = olderQuantity;
+  }
 }

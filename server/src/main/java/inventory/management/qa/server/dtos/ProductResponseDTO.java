@@ -10,4 +10,5 @@ public class ProductResponseDTO {
     String category;
     double price;
     int quantity;
+    int olderQuantity;
 }
