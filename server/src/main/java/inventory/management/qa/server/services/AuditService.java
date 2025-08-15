@@ -9,6 +9,8 @@ import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.RevisionType;
 import org.hibernate.envers.query.AuditEntity;
+import org.hibernate.envers.query.order.AuditOrder;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,13 +20,18 @@ public class AuditService {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public List<ProductRevision> getAllProductRevisions(int pageNumber, int pageSize) {
+    public List<ProductRevision> getAllProductRevisions(int pageNumber, int pageSize, Sort.Direction sortOrder) {
         AuditReader auditReader = AuditReaderFactory.get(entityManager);
+
+        AuditOrder order = sortOrder == Sort.Direction.DESC
+                ? AuditEntity.revisionNumber().desc()
+                : AuditEntity.revisionNumber().asc();
 
         List<Object[]> revisionList = auditReader.createQuery()
                 .forRevisionsOfEntity(Product.class, false, true)
                 .setFirstResult((pageNumber - 1) * pageSize)
                 .setMaxResults(pageSize)
+                .addOrder(order)
                 .getResultList();
 
         return revisionList.stream().map(
