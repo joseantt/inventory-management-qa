@@ -22,4 +22,12 @@ public class PaginatedResponseDTO<T> {
         this.totalElements = page.getTotalElements();
         this.totalPages = page.getTotalPages();
     }
+
+    public PaginatedResponseDTO(List<T> content, int pageNumber, int pageSize, long totalElements, int totalPages) {
+        this.content = content;
+        this.pageNumber = pageNumber;
+        this.pageSize = pageSize;
+        this.totalElements = totalElements;
+        this.totalPages = totalPages;
+    }
 }
