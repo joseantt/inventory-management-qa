@@ -24,7 +24,7 @@ public class RevisionInfo {
     private Long id;
 
     @RevisionTimestamp
-    private LocalDateTime timestamp;
+    private Long timestamp;
 
     private String userEmail;
 }
